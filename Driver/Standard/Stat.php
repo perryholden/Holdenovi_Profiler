@@ -25,21 +25,21 @@ class Stat
     protected const TYPE_MODEL = 'model';
     protected const TYPE_EAVMODEL = 'eavmodel';
 
-    static protected  $startValues = array();
+    static protected $startValues = array();
 
-    static protected  $stackLevel = 0;
-    static protected  $stack = array();
-    static protected  $stackLevelMax = array();
-    static protected  $stackLog = array();
-    static protected  $uniqueCounter = 0;
-    static protected  $currentPointerStack = array();
+    static protected $stackLevel = 0;
+    static protected $stack = array();
+    static protected $stackLevelMax = array();
+    static protected $stackLog = array();
+    static protected $uniqueCounter = 0;
+    static protected $currentPointerStack = array();
 
-    static protected  $_enabled = false;
-    static protected  $_checkedEnabled = false;
+    static protected $_enabled = false;
+    static protected $_checkedEnabled = false;
 
-    static protected  $_logCallStack = false;
+    static protected $_logCallStack = false;
 
-    static protected  $_configuration;
+    static protected $_configuration;
     static protected $_timers = [];
 
     /**
@@ -47,7 +47,7 @@ class Stat
      *
      * @return stdClass
      */
-    public static function getConfiguration()
+    public static function getConfiguration() : stdClass
     {
         if (!self::$_configuration) {
             self::$_configuration = new stdClass();
@@ -79,7 +79,7 @@ class Stat
      * @static
      * @return bool
      */
-    public static function isEnabled()
+    public static function isEnabled() : bool
     {
         if (!self::$_checkedEnabled) {
             self::$_checkedEnabled = true;
@@ -129,7 +129,7 @@ class Stat
      * @param string $type
      * @return void
      */
-    public static function start($name, $type = '')
+    public static function start($name, $type = '') : void
     {
         if (!self::isEnabled()) {
             return;
@@ -171,10 +171,10 @@ class Stat
      * Pull element from stack
      *
      * @param string $name
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
-    public static function stop($name)
+    public static function stop($name) : void
     {
         if (!self::isEnabled()) {
             return;
@@ -247,7 +247,7 @@ class Stat
      *
      * @return void
      */
-    public static function enable()
+    public static function enable() : void
     {
         self::$startValues = array(
             'time' => microtime(true),
@@ -261,8 +261,9 @@ class Stat
      * Disabling profiler
      *
      * @return void
+     * @throws \Exception
      */
-    public static function disable()
+    public static function disable() : void
     {
 
         if (self::isEnabled()) {
@@ -283,7 +284,7 @@ class Stat
      * @return array
      * @throws \Exception
      */
-    public static function getStackLog()
+    public static function getStackLog() : array
     {
         if (self::isEnabled()) {
             throw new \Exception('Disable profiler first!');
@@ -297,7 +298,7 @@ class Stat
      * @static
      * @param $logStackTrace
      */
-    public static function setLogCallStack($logStackTrace)
+    public static function setLogCallStack($logStackTrace) : void
     {
         self::$_logCallStack = $logStackTrace;
     }
@@ -307,7 +308,7 @@ class Stat
      *
      * @return void
      */
-    public static function calculate()
+    public static function calculate() : void
     {
         foreach (self::$stackLog as &$data) {
             foreach (array('time', 'realmem', 'emalloc') as $metric) {
@@ -323,7 +324,7 @@ class Stat
      *
      * @return bool
      */
-    public static function checkThresholds()
+    public static function checkThresholds() : bool
     {
         $conf = self::getConfiguration();
         $totals = self::getTotals();
@@ -338,7 +339,7 @@ class Stat
      *
      * @return array
      */
-    public static function getTotals()
+    public static function getTotals() : array
     {
         $totals = array();
         $lastLog = end(self::$stackLog);

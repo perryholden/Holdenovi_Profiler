@@ -24,6 +24,17 @@ class Run extends \Magento\Framework\Model\AbstractExtensibleModel implements Ru
     }
 
     /**
+     * Set run_id
+     *
+     * @param string $runId
+     * @return $this
+     */
+    public function setRunId($runId)
+    {
+        return $this->setData(self::RUN_ID, $runId);
+    }
+
+    /**
      * Get created_at
      *
      * @return string

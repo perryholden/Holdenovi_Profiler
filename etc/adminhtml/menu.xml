@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category    Holdenovi
+ * @package     Profiler
+ * @copyright   Copyright (c) 2020 Holdenovi LLC
+ * @license     GPL-3.0 (see COPYING for details)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Holdenovi_Profiler::profiler"
+             title="Holdenovi Profiler"
+             translate="title"
+             module="Holdenovi_Profiler"
+             sortOrder="100"
+             resource="Holdenovi_Profiler::profiler"
+             parent="Magento_Backend::system_tools"
+             action="profiler/index/index"/>
+    </menu>
+</config>
