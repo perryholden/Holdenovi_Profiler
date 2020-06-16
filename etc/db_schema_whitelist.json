@@ -1,0 +1,18 @@
+{
+    "holdenovi_profiler_run": {
+        "column": {
+            "run_id": true,
+            "created_at": true,
+            "stack_data": true,
+            "route": true,
+            "url": true,
+            "session_id": true,
+            "total_time": true,
+            "total_real_memory": true,
+            "total_allocated_memory": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

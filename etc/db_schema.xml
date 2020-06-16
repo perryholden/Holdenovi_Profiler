@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category    Holdenovi
+ * @package     Profiler
+ * @copyright   Copyright (c) 2020 Holdenovi LLC
+ * @license     GPL-3.0 (see COPYING for details)
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="holdenovi_profiler_run" resource="default" engine="innodb" comment="Holdenovi_Profiler Run Table">
+        <column xsi:type="int" name="run_id" padding="11" unsigned="true" nullable="false" identity="true" comment="Run ID"/>
+        <column xsi:type="timestamp" name="created_at" comment="Creation Time"/>
+        <column xsi:type="mediumblob" name="stack_data" comment="Data"/>
+        <column xsi:type="varchar" name="route" length="255" comment="Route"/>
+        <column xsi:type="varchar" name="url" length="255" comment="URL"/>
+        <column xsi:type="varchar" name="session_id" length="255" comment="Session ID"/>
+        <column xsi:type="float" name="total_time" comment="Total Time in seconds"/>
+        <column xsi:type="float" name="total_real_memory" comment="Total Real Memory in MB"/>
+        <column xsi:type="float" name="total_allocated_memory" comment="Total Allocated Memory in MB"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="run_id"/>
+        </constraint>
+    </table>
+</schema>

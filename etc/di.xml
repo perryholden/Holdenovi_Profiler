@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<!--
+/**
+ * @category    Holdenovi
+ * @package     Profiler
+ * @copyright   Copyright (c) 2020 Holdenovi LLC
+ * @license     GPL-3.0 (see COPYING for details)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Holdenovi\Profiler\Api\RunRepositoryInterface" type="Holdenovi\Profiler\Model\RunRepository"/>
+    <preference for="Holdenovi\Profiler\Api\Data\RunInterface" type="Holdenovi\Profiler\Model\Data\Run"/>
+    <preference for="Holdenovi\Profiler\Api\Data\RunSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+</config>
