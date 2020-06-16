@@ -13,15 +13,6 @@ use stdClass;
 
 class Stat
 {
-    /**
-     * Eventual config settings
-     */
-    protected const HIDE_LINES_FASTER_THAN = '10';
-    protected const LOG_INVALID_NESTING = '0';
-    protected const REMOTE_CALL_URL_TEMPLATE = 'http://localhost:8091/?message=%1$s:%2$s';
-    protected const SCHEDULER_CRON_EXPR_PROFILER = '45 3 * * *'; // Old runs cleanup schedule
-    protected const KEEP_DAYS = '1';
-
     protected const FILENAME_CONFIG = 'holdenovi_profiler.xml';
 
     protected const TYPE_DEFAULT = 'default';
