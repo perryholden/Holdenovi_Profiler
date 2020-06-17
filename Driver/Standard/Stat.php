@@ -168,6 +168,35 @@ class Stat
     }
 
     /**
+     * Get type
+     *
+     * @param $type
+     * @param $label
+     * @return string
+     */
+    public static function getType($type, $label)
+    {
+        if (empty($type)) {
+            if (substr($label, -1 * strlen('.phtml')) == '.phtml') {
+                $type = self::TYPE_TEMPLATE;
+            } elseif (strpos($label, 'DISPATCH EVENT:') === 0) {
+                $type = self::TYPE_EVENT;
+            } elseif (strpos($label, 'OBSERVER:') === 0) {
+                $type = self::TYPE_OBSERVER;
+            } elseif (strpos($label, 'BLOCK:') === 0) {
+                $type = self::TYPE_BLOCK;
+            } elseif (strpos($label, 'CORE::create_object_of::') === 0) {
+                $type = self::TYPE_MODEL;
+            } elseif (strpos($label, '__EAV_LOAD_MODEL__') === 0) {
+                $type = self::TYPE_EAVMODEL;
+            } else {
+                $type = self::TYPE_DEFAULT;
+            }
+        }
+        return $type;
+    }
+
+    /**
      * Pull element from stack
      *
      * @param string $name

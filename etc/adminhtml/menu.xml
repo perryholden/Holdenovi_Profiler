@@ -16,6 +16,6 @@
              sortOrder="100"
              resource="Holdenovi_Profiler::profiler"
              parent="Magento_Backend::system_tools"
-             action="profiler/index/index"/>
+             action="profiler/run/index"/>
     </menu>
 </config>

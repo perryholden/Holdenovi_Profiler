@@ -34,6 +34,30 @@
             </settings>
         </dataProvider>
     </dataSource>
+    <listingToolbar name="listing_top">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="sticky" xsi:type="boolean">true</item>
+            </item>
+        </argument>
+        <bookmark name="bookmarks" />
+        <columnsControls name="columns_controls" />
+        <filters name="listing_filters" />
+        <paging name="listing_paging"/>
+        <massaction name="listing_massaction">
+            <action name="delete">
+                <settings>
+                    <confirm>
+                        <message translate="true">Are you sure you want to delete selected items?</message>
+                        <title translate="true">Delete items</title>
+                    </confirm>
+                    <url path="profiler/run/massDelete"/>
+                    <type>delete</type>
+                    <label translate="true">Delete</label>
+                </settings>
+            </action>
+        </massaction>
+    </listingToolbar>
     <columns name="profiler_run_columns">
         <selectionsColumn name="ids">
             <settings>
@@ -95,6 +119,16 @@
                 <label translate="true">Total Allocated Memory (MB)</label>
             </settings>
         </column>
+        <actionsColumn name="actions" class="Holdenovi\Profiler\Ui\Component\Listing\Column\ViewAction">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="viewUrlPath" xsi:type="string">profiler/run/view</item>
+                </item>
+            </argument>
+            <settings>
+                <indexField>run_id</indexField>
+            </settings>
+        </actionsColumn>
     </columns>
 </listing>
 

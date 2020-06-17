@@ -1,11 +1,18 @@
 <?php
+/**
+ * @category    Holdenovi
+ * @package     Profiler
+ * @copyright   Copyright (c) 2020 Holdenovi LLC
+ * @license     GPL-3.0 (see COPYING for details)
+ */
+declare(strict_types=1);
 
-namespace Holdenovi\Profiler\Controller\Adminhtml\Index;
+namespace Holdenovi\Profiler\Controller\Adminhtml\Run;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 
-class Index extends \Magento\Backend\App\Action
+class Index extends \Holdenovi\Profiler\Controller\Adminhtml\Run
 {
     /**
      * Authorization level of a basic admin session
