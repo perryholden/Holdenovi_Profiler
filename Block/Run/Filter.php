@@ -16,6 +16,6 @@ class Filter extends \Holdenovi\Profiler\Block\Run
      */
     protected function _toHtml()
     {
-        return 'Filter' . parent::_toHtml();
+        return '<h2>Filter</h2>' . parent::_toHtml();
     }
 }

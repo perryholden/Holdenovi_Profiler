@@ -26,7 +26,7 @@ class Run extends \Magento\Framework\Model\AbstractExtensibleModel implements Ru
     /**
      * @var array
      */
-    protected $metrics = array('time', /*'realmem',*/ 'emalloc');
+    protected $metrics = ['time', 'realmem'/*, 'emalloc'*/];
 
     /**
      * Get run_id
@@ -318,13 +318,13 @@ class Run extends \Magento\Framework\Model\AbstractExtensibleModel implements Ru
     }
 
     /**
-     * Calculate relative values
+     * Calculate relative values on the entire stack log
      */
     protected function calcRelativeValues()
     {
         foreach ($this->stackLog as $key => $value) {
             foreach ($this->metrics as $metric) {
-                foreach (array('own', 'sub', 'total') as $column) {
+                foreach (['own', 'sub', 'total'] as $column) {
                     $tempKey = $metric . '_' . $column;
                     if (!isset($this->stackLog[$key][$tempKey])) {
                         continue;

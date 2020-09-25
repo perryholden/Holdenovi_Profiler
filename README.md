@@ -26,5 +26,12 @@ bin/magento setup:upgrade
 To enable the profiler:
 
 1. Copy the `holdenovi_profiler.xml.sample` file to `var/holdenovi_profiler.xml` and configure based on XML file comments.
-2. Disable full page cache: `bin/magento cache:disable full_page`
+2. Disable the full-page and block caches: `bin/magento cache:disable full_page block_html`
 3. Run the following command: `bin/magento dev:profiler:enable '{"drivers":[{"type":"Holdenovi\\Profiler\\Driver\\Hierarchy"}]}'`
+
+## TODO:
+
+1. Add buttons to admin view page.
+2. Refactor CSS into LESS
+3. Refactor the config and isEnabled because this is already done by Profiler
+4. Implement the clear method in the new Stat

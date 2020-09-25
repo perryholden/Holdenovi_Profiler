@@ -23,7 +23,7 @@ class Tree extends \Holdenovi\Profiler\Block\Run
     /**
      * @var array metrics to be displayed
      */
-    protected $metrics = array('time', /*'realmem',*/ 'emalloc');
+    protected $metrics = ['time', 'realmem'/*, 'emalloc'*/];
 
     /**
      * @var array units
@@ -236,7 +236,7 @@ class Tree extends \Holdenovi\Profiler\Block\Run
      * @param int $offset
      * @return string
      */
-    protected function renderProgressBar($percent1, $percent2 = 0, $offset = 0)
+    protected function renderProgressBar($percent1, $percent2, $offset)
     {
         $percent1 = round(max(1, $percent1));
         $offset = round(max(0, $offset));
