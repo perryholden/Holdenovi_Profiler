@@ -9,9 +9,12 @@ declare(strict_types=1);
 
 namespace Holdenovi\Profiler\Block\Run;
 
+use Holdenovi\Profiler\Helper\Data as DataHelper;
 use Holdenovi\Profiler\Helper\Formatting as FormattingHelper;
 use Holdenovi\Profiler\Registry\CurrentRun;
 use Magento\Backend\Block\Template\Context;
+use Magento\Backend\Block\Widget\Button\ButtonList;
+use Magento\Backend\Block\Widget\Button\ToolbarInterface;
 
 class Tree extends \Holdenovi\Profiler\Block\Run
 {
@@ -19,6 +22,11 @@ class Tree extends \Holdenovi\Profiler\Block\Run
      * @var FormattingHelper
      */
     protected $formattingHelper;
+
+    /**
+     * @var DataHelper
+     */
+    protected $dataHelper;
 
     /**
      * @var array metrics to be displayed
@@ -47,17 +55,24 @@ class Tree extends \Holdenovi\Profiler\Block\Run
     /**
      * @param Context $context
      * @param CurrentRun $currentRunRegistry
+     * @param ButtonList $buttonList
+     * @param ToolbarInterface $toolbar
      * @param FormattingHelper $formattingHelper
+     * @param DataHelper $dataHelper
      * @param array $data
      */
     public function __construct(
         Context $context,
         CurrentRun $currentRunRegistry,
+        ButtonList $buttonList,
+        ToolbarInterface $toolbar,
         FormattingHelper $formattingHelper,
+        DataHelper $dataHelper,
         array $data = [])
     {
         $this->formattingHelper = $formattingHelper;
-        parent::__construct($context, $currentRunRegistry, $data);
+        $this->dataHelper = $dataHelper;
+        parent::__construct($context, $currentRunRegistry, $buttonList, $toolbar, $data);
     }
 
 
@@ -99,7 +114,7 @@ class Tree extends \Holdenovi\Profiler\Block\Run
                 $output .= '<span class="caption type-' . $type . '" title="' . htmlspecialchars($label) . '" />';
 
                 if (isset($tmp['file'])) {
-                    $remoteCallUrlTemplate = Mage::getStoreConfig('dev/debug/remoteCallUrlTemplate');
+                    $remoteCallUrlTemplate = $this->dataHelper->getRemoteCallUrlTemplate();
                     $linkTemplate = '<a href="%s" onclick="var ajax = new XMLHttpRequest(); ajax.open(\'GET\', this.href); ajax.send(null); return false">%s</a>';
                     $url = sprintf($remoteCallUrlTemplate, $tmp['file'], intval($tmp['line']));
                     $output .= sprintf($linkTemplate, $url, htmlspecialchars($label));
