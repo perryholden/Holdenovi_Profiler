@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category    Holdenovi
+ * @package     Profiler
+ * @copyright   Copyright (c) 2020 Holdenovi LLC
+ * @license     GPL-3.0 (see COPYING for details)
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <uiComponent name="profiler_run_listing"/>
+        </referenceContainer>
+    </body>
+</page>

@@ -12,6 +12,7 @@ namespace Holdenovi\Profiler\Observer;
 use Holdenovi\Profiler\Api\Data\RunInterfaceFactory;
 use Holdenovi\Profiler\Api\RunRepositoryInterface;
 use Holdenovi\Profiler\Driver\Standard\Stat;
+use Holdenovi\Profiler\Driver\Hierarchy;
 use Holdenovi\Profiler\Model\Data\Run;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Observer;
@@ -81,12 +82,12 @@ class SaveRunObserver implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if (Stat::isEnabled()) {
+        if (Hierarchy::isInternalEnabled()) {
 
             // This also removes the time entry for this observer
-            Stat::disable();
+            Hierarchy::disable();
 
-            if (Stat::checkThresholds()) {
+            if (Hierarchy::checkThresholds()) {
 
                 // Save this run to the DB
                 /** @var Run $run */
@@ -96,7 +97,7 @@ class SaveRunObserver implements ObserverInterface
                     $run->setCreatedAt($this->dateTime->gmtDate());
                 }
 
-                $run->setStackData(serialize(Stat::getStackLog()));
+                $run->setStackData(serialize(Hierarchy::getStackLog()));
                 $run->setUrl($this->request->getRequestUri());
                 $run->setRoute($this->request->getFullActionName());
                 $run->setSessionId($this->session->getSessionId());

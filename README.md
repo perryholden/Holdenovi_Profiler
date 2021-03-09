@@ -2,7 +2,7 @@
 
 ## Description
 
-A Magento profiler based on AOE_Profiler for Magento 1
+A Magento 2 profiler based on AOE_Profiler for Magento 1
 
 ## Installation via GitHub
 
@@ -26,5 +26,5 @@ bin/magento setup:upgrade
 To enable the profiler:
 
 1. Copy the `holdenovi_profiler.xml.sample` file to `var/holdenovi_profiler.xml` and configure based on XML file comments.
-2. Disable full page cache: `bin/magento cache:disable full_page`
+2. Disable the full-page and block caches: `bin/magento cache:disable full_page block_html`
 3. Run the following command: `bin/magento dev:profiler:enable '{"drivers":[{"type":"Holdenovi\\Profiler\\Driver\\Hierarchy"}]}'`

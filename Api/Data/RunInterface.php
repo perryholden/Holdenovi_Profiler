@@ -29,6 +29,14 @@ interface RunInterface extends \Magento\Framework\Api\ExtensibleDataInterface
     public function getRunId();
 
     /**
+     * Set run_id
+     *
+     * @param string $runId
+     * @return $this
+     */
+    public function setRunId($runId);
+
+    /**
      * Get created_at
      *
      * @return string

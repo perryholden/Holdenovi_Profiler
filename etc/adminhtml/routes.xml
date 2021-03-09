@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category    Holdenovi
+ * @package     Profiler
+ * @copyright   Copyright (c) 2020 Holdenovi LLC
+ * @license     GPL-3.0 (see COPYING for details)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+    <router id="admin">
+        <route id="profiler" frontName="profiler">
+            <module name="Holdenovi_Profiler" before="Magento_Backend"/>
+        </route>
+    </router>
+</config>

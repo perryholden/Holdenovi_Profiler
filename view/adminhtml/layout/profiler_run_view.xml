@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category    Holdenovi
+ * @package     Profiler
+ * @copyright   Copyright (c) 2020 Holdenovi LLC
+ * @license     GPL-3.0 (see COPYING for details)
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="page.title">
+            <action method="setPageTitle">
+                <argument name="title" xsi:type="string">Profiler Run Details</argument>
+            </action>
+        </referenceBlock>
+        <referenceContainer name="content">
+            <block class="Holdenovi\Profiler\Block\Run" name="holdenovi.profiler.run" template="Holdenovi_Profiler::view.phtml">
+                <block class="Holdenovi\Profiler\Block\Run\Tree" name="holdenovi.profiler.tree" />
+                <block class="Holdenovi\Profiler\Block\Run\Filter" name="holdenovi.profiler.filter" template="Holdenovi_Profiler::filter.phtml" />
+            </block>
+        </referenceContainer>
+    </body>
+</page>

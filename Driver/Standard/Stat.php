@@ -9,21 +9,8 @@ declare(strict_types=1);
 
 namespace Holdenovi\Profiler\Driver\Standard;
 
-use stdClass;
-
 class Stat
 {
-    /**
-     * Eventual config settings
-     */
-    protected const HIDE_LINES_FASTER_THAN = '10';
-    protected const LOG_INVALID_NESTING = '0';
-    protected const REMOTE_CALL_URL_TEMPLATE = 'http://localhost:8091/?message=%1$s:%2$s';
-    protected const SCHEDULER_CRON_EXPR_PROFILER = '45 3 * * *'; // Old runs cleanup schedule
-    protected const KEEP_DAYS = '1';
-
-    protected const FILENAME_CONFIG = 'holdenovi_profiler.xml';
-
     protected const TYPE_DEFAULT = 'default';
     protected const TYPE_DEFAULT_NOCHILDREN = 'default-nochildren';
     protected const TYPE_DATABASE = 'db';
@@ -34,129 +21,45 @@ class Stat
     protected const TYPE_MODEL = 'model';
     protected const TYPE_EAVMODEL = 'eavmodel';
 
-    static protected  $startValues = array();
+    // Set at the beginning and will be used in relative values "on-stop" as well as totals calculations.
+    static public $startValues = [];
+    // Tracks the depth of the stack
+    static protected $stackLevel = 0;
+    // Tracks the current stack
+    static public $stack = [];
+    // Holds the entire log which will be saved to the DB
+    static public $stackLog = [];
+    // Used to make stackLog entries unique (e.g. timetracker_0)
+    static protected $uniqueCounter = 0;
+    // Current pointer where in the stack we are located
+    static protected $currentPointerStack = []; // [timetracker_0, timetracker_1]
 
-    static protected  $stackLevel = 0;
-    static protected  $stack = array();
-    static protected  $stackLevelMax = array();
-    static protected  $stackLog = array();
-    static protected  $uniqueCounter = 0;
-    static protected  $currentPointerStack = array();
-
-    static protected  $_enabled = false;
-    static protected  $_checkedEnabled = false;
-
-    static protected  $_logCallStack = false;
-
-    static protected  $_configuration;
-    static protected $_timers = [];
-
-    /**
-     * Get configuration object
-     *
-     * @return stdClass
-     */
-    public static function getConfiguration()
-    {
-        if (!self::$_configuration) {
-            self::$_configuration = new stdClass();
-            self::$_configuration->trigger = 'never';
-            self::$_configuration->filters = new stdClass();
-
-            $file = BP . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . self::FILENAME_CONFIG;
-
-            if (is_file($file) && ($conf = simplexml_load_file($file))) {
-                self::$_configuration->trigger = (string)$conf->holdenovi_profiler->trigger;
-                self::$_configuration->captureModelInfo = (bool)(string)$conf->holdenovi_profiler->captureModelInfo;
-                self::$_configuration->captureBacktraces = (bool)(string)$conf->holdenovi_profiler->captureBacktraces;
-                self::$_configuration->enableFilters = (bool)(string)$conf->holdenovi_profiler->enableFilters;
-                if (self::$_configuration->enableFilters) {
-                    self::$_configuration->filters->sampling = (float)$conf->holdenovi_profiler->filters->sampling;
-                    self::$_configuration->filters->timeThreshold = (int)$conf->holdenovi_profiler->filters->timeThreshold;
-                    self::$_configuration->filters->memoryThreshold = (int)$conf->holdenovi_profiler->filters->memoryThreshold;
-                    self::$_configuration->filters->requestUriWhiteList = (string)$conf->holdenovi_profiler->filters->requestUriWhiteList;
-                    self::$_configuration->filters->requestUriBlackList = (string)$conf->holdenovi_profiler->filters->requestUriBlackList;
-                }
-            }
-        }
-        return self::$_configuration;
-    }
-
-    /**
-     * Check if profiler is enabled.
-     *
-     * @static
-     * @return bool
-     */
-    public static function isEnabled()
-    {
-        if (!self::$_checkedEnabled) {
-            self::$_checkedEnabled = true;
-
-            $conf = self::getConfiguration();
-
-            $enabled = false;
-            if (strtolower($conf->trigger) === 'always') {
-                $enabled = true;
-            } elseif (strtolower($conf->trigger) === 'parameter') {
-                if ((isset($_GET['profile']) && $_GET['profile'] == true) || (isset($_COOKIE['profile']) && $_COOKIE['profile'] == true)) {
-                    $enabled = true;
-                }
-            }
-
-            // Process filters
-            if ($enabled && $conf->enableFilters) {
-
-                // sampling filter
-                if ($enabled && rand(0,100000) > $conf->filters->sampling * 1000) {
-                    $enabled = false;
-                }
-
-                // request uri whitelist/blacklist
-                $requestUri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : ''; // TODO: use script name instead for cli?
-                if ($enabled && $conf->filters->requestUriWhiteList && !preg_match($conf->filters->requestUriWhiteList, $requestUri)) {
-                    $enabled = false;
-                }
-                if ($enabled && $conf->filters->requestUriBlackList && preg_match($conf->filters->requestUriBlackList, $requestUri)) {
-                    $enabled = false;
-                }
-
-                // note: timeThreshold and memoryThreshold will be checked before persisting records. In these cases data will still be recorded during the request
-            }
-
-            if ($enabled) {
-                self::enable();
-            }
-        }
-        return self::$_enabled;
-    }
+    static protected $_logCallStack = false;
 
     /**
      * Pushes to the stack
      *
      * @param string $name
+     * @param string $time
+     * @param string $realMemory
+     * @param string $emallocMemory
      * @param string $type
      * @return void
      */
-    public static function start($name, $type = '')
+    public static function start($name, $time, $realMemory, $emallocMemory, $type = '') : void
     {
-        if (!self::isEnabled()) {
-            return;
-        }
-
         $currentPointer = 'timetracker_' . self::$uniqueCounter++;
         self::$currentPointerStack[] = $currentPointer;
         self::$stack[] = $name;
 
         self::$stackLevel++;
-        self::$stackLevelMax[] = self::$stackLevel;
 
         self::$stackLog[$currentPointer] = array(
             'level' => self::$stackLevel,
             'stack' => self::$stack,
-            'time_start' => microtime(true),
-            'realmem_start' => memory_get_usage(true),
-            'emalloc_start' => memory_get_usage(false),
+            'time_start' => $time,
+            'realmem_start' => $realMemory,
+            'emalloc_start' => $emallocMemory,
             'type' => $type,
         );
 
@@ -177,33 +80,60 @@ class Stat
     }
 
     /**
+     * Get type
+     *
+     * @param $type
+     * @param $label
+     * @return string
+     */
+    public static function getType($type, $label)
+    {
+        if (empty($type)) {
+            if (substr($label, -1 * strlen('.phtml')) === '.phtml') {
+                $type = self::TYPE_TEMPLATE;
+            } elseif (strpos($label, 'DISPATCH EVENT:') === 0) {
+                $type = self::TYPE_EVENT;
+            } elseif (strpos($label, 'OBSERVER:') === 0) {
+                $type = self::TYPE_OBSERVER;
+            } elseif (strpos($label, 'BLOCK:') === 0) {
+                $type = self::TYPE_BLOCK;
+            } elseif (strpos($label, 'CORE::create_object_of::') === 0) {
+                $type = self::TYPE_MODEL;
+            } elseif (strpos($label, '__EAV_LOAD_MODEL__') === 0) {
+                $type = self::TYPE_EAVMODEL;
+            } else {
+                $type = self::TYPE_DEFAULT;
+            }
+        }
+        return $type;
+    }
+
+    /**
      * Pull element from stack
      *
      * @param string $name
-     * @throws Exception
+     * @param string $time
+     * @param string $realMemory
+     * @param string $emallocMemory
      * @return void
      */
-    public static function stop($name)
+    public static function stop($name, $time, $realMemory, $emallocMemory) : void
     {
-        if (!self::isEnabled()) {
-            return;
-        }
-
-//        $currentName = end(self::$stack);
+        $currentName = end(self::$stack);
 //        if ($currentName != $name) {
-//            if (Mage::getStoreConfigFlag('dev/debug/logInvalidNesting')) {
-//                Mage::log('[INVALID NESTING!] Found: ' . $name . " | Expecting: $currentName");
-//            }
+////            if (Mage::getStoreConfigFlag('dev/debug/logInvalidNesting')) {
+////                Mage::log('[INVALID NESTING!] Found: ' . $name . " | Expecting: $currentName");
+////            }
 //
 //            if (in_array($name, self::$stack)) {
 //                // trying to stop something that has been started before,
 //                // but there are other unstopped stack items
 //                // -> auto-stop them
 //                while (($latestStackItem = end(self::$stack)) != $name) {
-//                    if (Mage::getStoreConfigFlag('dev/debug/logInvalidNesting')) {
-//                        Mage::log('Auto-stopping timer "' . $latestStackItem . '" because of incorrect nesting');
-//                    }
-//                    self::stop($latestStackItem);
+////                    if (Mage::getStoreConfigFlag('dev/debug/logInvalidNesting')) {
+////                        Mage::log('Auto-stopping timer "' . $latestStackItem . '" because of incorrect nesting');
+////                    }
+//                    self::stop($latestStackItem, $time, $realMemory, $emallocMemory);
 //                }
 //            } else {
 //                // trying to stop something that hasn't been started before -> just ignore
@@ -211,17 +141,17 @@ class Stat
 //            }
 //
 //            // We shouldn't add another name to the stack if we've already crawled up to the current one...
-//            // $name = '[INVALID NESTING!] ' . $name;
-//            // self::start($name);
-//            // return;
-//            // throw new Exception(sprintf("Invalid nesting! Expected: '%s', was: '%s'", $currentName, $name));
+//             $name = '[INVALID NESTING!] ' . $name;
+////             self::start($name);
+////             return;
+////             throw new Exception(sprintf("Invalid nesting! Expected: '%s', was: '%s'", $currentName, $name));
 //        }
 
         $currentPointer = end(self::$currentPointerStack);
 
-        self::$stackLog[$currentPointer]['time_end'] = microtime(true);
-        self::$stackLog[$currentPointer]['realmem_end'] = memory_get_usage(true);
-        self::$stackLog[$currentPointer]['emalloc_end'] = memory_get_usage(false);
+        self::$stackLog[$currentPointer]['time_end'] = $time;
+        self::$stackLog[$currentPointer]['realmem_end'] = $realMemory;
+        self::$stackLog[$currentPointer]['emalloc_end'] = $emallocMemory;
 
 //        if (self::$_logCallStack !== false) {
 //            self::$stackLog[$currentPointer]['callstack'] = Varien_Debug::backtrace(true, false);
@@ -252,71 +182,11 @@ class Stat
 //    }
 
     /**
-     * Enabling profiler
-     *
-     * @return void
-     */
-    public static function enable()
-    {
-        self::$startValues = array(
-            'time' => microtime(true),
-            'realmem' => memory_get_usage(true),
-            'emalloc' => memory_get_usage(false)
-        );
-        self::$_enabled = true;
-    }
-
-    /**
-     * Disabling profiler
-     *
-     * @return void
-     */
-    public static function disable()
-    {
-
-        if (self::isEnabled()) {
-            // stop any timers still on stack (those might be stopped after calculation otherwise)
-            $stackCopy = self::$stack;
-            while ($timerName = array_pop($stackCopy)) {
-                self::stop($timerName);
-            }
-        }
-        self::$_enabled = false;
-
-        self::calculate();
-    }
-
-    /**
-     * Get raw stack log data
-     *
-     * @return array
-     * @throws \Exception
-     */
-    public static function getStackLog()
-    {
-        if (self::isEnabled()) {
-            throw new \Exception('Disable profiler first!');
-        }
-        return self::$stackLog;
-    }
-
-    /**
-     * Set log stack trace
-     *
-     * @static
-     * @param $logStackTrace
-     */
-    public static function setLogCallStack($logStackTrace)
-    {
-        self::$_logCallStack = $logStackTrace;
-    }
-
-    /**
      * Calculate relative data
      *
      * @return void
      */
-    public static function calculate()
+    public static function calculate() : void
     {
         foreach (self::$stackLog as &$data) {
             foreach (array('time', 'realmem', 'emalloc') as $metric) {
@@ -328,18 +198,14 @@ class Stat
     }
 
     /**
-     * This determines if the filtering thresholds have been reached
+     * Set log stack trace
      *
-     * @return bool
+     * @static
+     * @param $logStackTrace
      */
-    public static function checkThresholds()
+    public static function setLogCallStack($logStackTrace) : void
     {
-        $conf = self::getConfiguration();
-        $totals = self::getTotals();
-
-        // TODO: Refactor return statement
-        return empty($conf->enableFilters) || (!$conf->filters->timeThreshold || $totals['time'] > $conf->filters->timeThreshold) &&
-            (!$conf->filters->memoryThreshold || $totals['realmem'] > $conf->filters->memoryThreshold);
+        self::$_logCallStack = $logStackTrace;
     }
 
     /**
@@ -347,7 +213,7 @@ class Stat
      *
      * @return array
      */
-    public static function getTotals()
+    public static function getTotals() : array
     {
         $totals = array();
         $lastLog = end(self::$stackLog);

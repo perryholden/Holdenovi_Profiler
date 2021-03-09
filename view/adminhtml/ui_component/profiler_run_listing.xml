@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category    Holdenovi
+ * @package     Profiler
+ * @copyright   Copyright (c) 2020 Holdenovi LLC
+ * @license     GPL-3.0 (see COPYING for details)
+ */
+-->
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">profiler_run_listing.profiler_run_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>profiler_run_columns</spinner>
+        <deps>
+            <dep>profiler_run_listing.profiler_run_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="profiler_run_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">run_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>Holdenovi_Profiler::profiler</aclResource>
+        <dataProvider class="Holdenovi\Profiler\Ui\Component\DataProvider" name="profiler_run_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>run_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="sticky" xsi:type="boolean">true</item>
+            </item>
+        </argument>
+        <bookmark name="bookmarks" />
+        <columnsControls name="columns_controls" />
+        <filters name="listing_filters" />
+        <paging name="listing_paging"/>
+        <massaction name="listing_massaction">
+            <action name="delete">
+                <settings>
+                    <confirm>
+                        <message translate="true">Are you sure you want to delete selected items?</message>
+                        <title translate="true">Delete items</title>
+                    </confirm>
+                    <url path="profiler/run/massDelete"/>
+                    <type>delete</type>
+                    <label translate="true">Delete</label>
+                </settings>
+            </action>
+        </massaction>
+    </listingToolbar>
+    <columns name="profiler_run_columns">
+        <selectionsColumn name="ids">
+            <settings>
+                <indexField>run_id</indexField>
+                <resizeEnabled>false</resizeEnabled>
+                <resizeDefaultWidth>55</resizeDefaultWidth>
+            </settings>
+        </selectionsColumn>
+        <column name="run_id">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">ID</label>
+                <sorting>asc</sorting>
+            </settings>
+        </column>
+        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">dateRange</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
+                    <item name="dataType" xsi:type="string">date</item>
+                    <item name="label" xsi:type="string" translate="true">Created At</item>
+                </item>
+            </argument>
+        </column>
+        <column name="route">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Title</label>
+            </settings>
+        </column>
+        <column name="url">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">URL</label>
+            </settings>
+        </column>
+        <column name="session_id">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Session ID</label>
+            </settings>
+        </column>
+        <column name="total_time">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Total Time</label>
+            </settings>
+        </column>
+        <column name="total_real_memory">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Total Real Memory (MB)</label>
+            </settings>
+        </column>
+        <column name="total_allocated_memory">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Total Allocated Memory (MB)</label>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="Holdenovi\Profiler\Ui\Component\Listing\Column\ViewAction">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="viewUrlPath" xsi:type="string">profiler/run/view</item>
+                </item>
+            </argument>
+            <settings>
+                <indexField>run_id</indexField>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>
+

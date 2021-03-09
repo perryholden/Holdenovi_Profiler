@@ -14,6 +14,21 @@ use Holdenovi\Profiler\Api\Data\RunInterface;
 class Run extends \Magento\Framework\Model\AbstractExtensibleModel implements RunInterface
 {
     /**
+     * @var array
+     */
+    protected $stackLog;
+
+    /**
+     * @var array
+     */
+    protected $treeData;
+
+    /**
+     * @var array
+     */
+    protected $metrics = ['time', 'realmem'/*, 'emalloc'*/];
+
+    /**
      * Get run_id
      *
      * @return string
@@ -21,6 +36,17 @@ class Run extends \Magento\Framework\Model\AbstractExtensibleModel implements Ru
     public function getRunId()
     {
         return $this->getData(self::RUN_ID);
+    }
+
+    /**
+     * Set run_id
+     *
+     * @param string $runId
+     * @return $this
+     */
+    public function setRunId($runId)
+    {
+        return $this->setData(self::RUN_ID, $runId);
     }
 
     /**
@@ -211,6 +237,127 @@ class Run extends \Magento\Framework\Model\AbstractExtensibleModel implements Ru
         \Holdenovi\Profiler\Api\Data\RunExtensionInterface $extensionAttributes
     ) {
         return $this->_setExtensionAttributes($extensionAttributes);
+    }
+
+
+    /**
+     * @return \Holdenovi\Profiler\Model\Run
+     */
+    public function processRawData() : self
+    {
+        // First, manually set this property here
+        $this->stackLog = unserialize($this->getStackData(), ['allowed_classes' => false]);
+
+        // Create hierarchical array of keys pointing to the stack
+        foreach ($this->stackLog as $uniqueId => $data) {
+            $this->createHierarchyArray($this->treeData, $data['level'], $uniqueId);
+        }
+
+        $this->treeData = end($this->treeData);
+        $this->updateValues($this->treeData);
+
+        $this->calcRelativeValues();
+
+        return $this;
+    }
+
+    /**
+     * Helper function for internal data manipulation (Recursive function)
+     *
+     * @param array $arr
+     * @param int $pointer
+     * @param string $uniqueId
+     * @return void
+     */
+    protected function createHierarchyArray(&$arr, $pointer, $uniqueId) : void
+    {
+        if (!is_array($arr)) {
+            $arr = [];
+        }
+        if ($pointer > 0) {
+            end($arr);
+            $k = key($arr);
+            $this->createHierarchyArray($arr[(int)$k . '_children'], $pointer - 1, $uniqueId);
+        } else {
+            $arr[] = $uniqueId;
+        }
+    }
+
+    /**
+     * Update values. (Recursive function)
+     *
+     * @param $arr
+     * @param string $vKey
+     */
+    protected function updateValues(&$arr, $vKey = '')
+    {
+        $subSum = array_flip($this->metrics);
+        foreach ($arr as $k => $v) {
+
+            if (strpos((string)$k, '_children') === false) {
+                $tempKey = $k . '_children';
+                if (isset($arr[$tempKey]) && is_array($arr[$k . '_children'])) {
+                    $this->updateValues($arr[$k . '_children'], $v);
+                } else {
+                    foreach ($subSum as $key => $value) {
+                        $this->stackLog[$v][$key . '_sub'] = 0;
+                        $this->stackLog[$v][$key . '_own'] = $this->stackLog[$v][$key . '_total'];
+                    }
+                }
+                foreach ($subSum as $key => $value) {
+                    $subSum[$key] += $this->stackLog[$v][$key . '_total'];
+                }
+            }
+        }
+        if (isset($this->stackLog[$vKey])) {
+            foreach ($subSum as $key => $value) {
+                $this->stackLog[$vKey][$key . '_sub'] = $subSum[$key];
+                $this->stackLog[$vKey][$key . '_own'] = $this->stackLog[$vKey][$key . '_total'] - $subSum[$key];
+            }
+        }
+    }
+
+    /**
+     * Calculate relative values on the entire stack log
+     */
+    protected function calcRelativeValues()
+    {
+        foreach ($this->stackLog as $key => $value) {
+            foreach ($this->metrics as $metric) {
+                foreach (['own', 'sub', 'total'] as $column) {
+                    $tempKey = $metric . '_' . $column;
+                    if (!isset($this->stackLog[$key][$tempKey])) {
+                        continue;
+                    }
+                    try {
+                        $this->stackLog[$key][$metric . '_rel_' . $column] = $this->stackLog[$key][$metric . '_' . $column] / $this->stackLog['timetracker_0'][$metric . '_total'];
+                    } catch (\Exception $e) {
+                        $this->stackLog[$key][$metric . '_rel_' . $column] = 0;
+                    }
+                }
+                try {
+                    $this->stackLog[$key][$metric . '_rel_offset'] = $this->stackLog[$key][$metric . '_start_relative'] / $this->stackLog['timetracker_0'][$metric . '_total'];
+                } catch (\Exception $e) {
+                    $this->stackLog[$key][$metric . '_rel_offset'] = 0;
+                }
+            }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getTreeData()
+    {
+        return $this->treeData;
+    }
+
+    /**
+     * @return array
+     */
+    public function getStackLog()
+    {
+        return $this->stackLog;
     }
 }
 

@@ -1,0 +1,51 @@
+<?php
+/**
+ * @var \Holdenovi\Profiler\Block\Run $block
+ */
+
+/** @var \Holdenovi\Profiler\Api\Data\RunInterface $currentRun */
+$currentRun = $block->getRun();
+?>
+
+<table class="data-table admin__table-primary" id="profiler-widget">
+    <tr>
+        <td><strong><?= __('Created:') ?></strong></td>
+        <td><?php echo $block->formatDate($currentRun->getCreatedAt(), \IntlDateFormatter::MEDIUM, true); ?></td>
+    </tr>
+    <tr>
+        <td><strong><?= __('Route:') ?></strong></td>
+        <td><?php echo $block->escapeHtml($currentRun->getRoute()); ?></td>
+    </tr>
+    <tr>
+        <td><strong><?= __('URL:') ?></strong></td>
+        <td><?php echo $block->escapeHtml($currentRun->getUrl()); ?></td>
+    </tr>
+    <tr>
+        <td><strong><?= __('Session Id:') ?></strong></td>
+        <td><?php echo $block->escapeHtml($currentRun->getSessionId()); ?></td>
+    </tr>
+    <tr>
+        <td><strong><?= __('Time [sec]:') ?></strong></td>
+        <td><?php echo $block->escapeHtml($currentRun->getTotalTime()); ?></td>
+    </tr>
+    <tr>
+        <td><strong><?= __('Real Memory [MB]') ?></strong></td>
+        <td><?php echo $block->escapeHtml($currentRun->getTotalRealMemory()); ?></td>
+    </tr>
+    <tr>
+        <td><strong><?= __('Allocated Memory [MB]') ?></strong></td>
+        <td><?php echo $block->escapeHtml($currentRun->getTotalAllocatedMemory()); ?></td>
+    </tr>
+</table>
+
+<?php echo $block->getChildHtml('holdenovi.profiler.filter') ?>
+
+<?php echo $block->getChildHtml('holdenovi.profiler.tree') ?>
+
+<script type="text/x-magento-init">
+     {
+         "#treeView": {
+             "holdenoviProfiler": {}
+         }
+     }
+ </script>

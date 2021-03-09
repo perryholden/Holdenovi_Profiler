@@ -58,7 +58,7 @@ class Run extends \Magento\Framework\Model\AbstractModel
      *
      * @return RunInterface
      */
-    public function getDataModel()
+    public function getDataModel() : RunInterface
     {
         $runData = $this->getData();
         
