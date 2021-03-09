@@ -16,8 +16,8 @@
         </referenceBlock>
         <referenceContainer name="content">
             <block class="Holdenovi\Profiler\Block\Run" name="holdenovi.profiler.run" template="Holdenovi_Profiler::view.phtml">
-                <block class="Holdenovi\Profiler\Block\Run\Tree" name="holdenovi.profiler.tree"/>
-                <block class="Holdenovi\Profiler\Block\Run\Filter" name="holdenovi.profiler.filter"/>
+                <block class="Holdenovi\Profiler\Block\Run\Tree" name="holdenovi.profiler.tree" />
+                <block class="Holdenovi\Profiler\Block\Run\Filter" name="holdenovi.profiler.filter" template="Holdenovi_Profiler::filter.phtml" />
             </block>
         </referenceContainer>
     </body>

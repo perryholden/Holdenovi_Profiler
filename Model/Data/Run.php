@@ -329,9 +329,17 @@ class Run extends \Magento\Framework\Model\AbstractExtensibleModel implements Ru
                     if (!isset($this->stackLog[$key][$tempKey])) {
                         continue;
                     }
-                    $this->stackLog[$key][$metric . '_rel_' . $column] = $this->stackLog[$key][$metric . '_' . $column] / $this->stackLog['timetracker_0'][$metric . '_total'];
+                    try {
+                        $this->stackLog[$key][$metric . '_rel_' . $column] = $this->stackLog[$key][$metric . '_' . $column] / $this->stackLog['timetracker_0'][$metric . '_total'];
+                    } catch (\Exception $e) {
+                        $this->stackLog[$key][$metric . '_rel_' . $column] = 0;
+                    }
                 }
-                $this->stackLog[$key][$metric . '_rel_offset'] = $this->stackLog[$key][$metric . '_start_relative'] / $this->stackLog['timetracker_0'][$metric . '_total'];
+                try {
+                    $this->stackLog[$key][$metric . '_rel_offset'] = $this->stackLog[$key][$metric . '_start_relative'] / $this->stackLog['timetracker_0'][$metric . '_total'];
+                } catch (\Exception $e) {
+                    $this->stackLog[$key][$metric . '_rel_offset'] = 0;
+                }
             }
         }
     }

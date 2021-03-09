@@ -9,13 +9,33 @@ declare(strict_types=1);
 
 namespace Holdenovi\Profiler\Block\Run;
 
-class Filter extends \Holdenovi\Profiler\Block\Run
+use Holdenovi\Profiler\Helper\Data as DataHelper;
+use Magento\Backend\Block\Template\Context;
+
+class Filter extends \Magento\Backend\Block\Template
 {
     /**
-     * @return string
+     * @var DataHelper
      */
-    protected function _toHtml()
+    protected $dataHelper;
+
+    /**
+     * @param Context $context
+     * @param DataHelper $dataHelper
+     * @param array $data
+     */
+    public function __construct(Context $context, DataHelper $dataHelper, array $data = [])
     {
-        return '<h2>Filter</h2>' . parent::_toHtml();
+        $this->dataHelper = $dataHelper;
+        parent::__construct($context, $data);
+    }
+
+
+    /**
+     * @return DataHelper
+     */
+    public function getDataHelper()
+    {
+        return $this->dataHelper;
     }
 }
