@@ -106,8 +106,6 @@ class Hierarchy extends Standard
 
             if (is_file($file) && ($conf = simplexml_load_file($file))) {
                 self::$_configuration->trigger = (string)$conf->holdenovi_profiler->trigger;
-                self::$_configuration->captureModelInfo = (bool)(string)$conf->holdenovi_profiler->captureModelInfo;
-                self::$_configuration->captureBacktraces = (bool)(string)$conf->holdenovi_profiler->captureBacktraces;
                 self::$_configuration->enableFilters = (bool)(string)$conf->holdenovi_profiler->enableFilters;
                 if (self::$_configuration->enableFilters) {
                     self::$_configuration->filters->sampling = (float)$conf->holdenovi_profiler->filters->sampling;

@@ -9,12 +9,14 @@ declare(strict_types=1);
 
 namespace Holdenovi\Profiler\Block\Run;
 
+use Holdenovi\Profiler\Driver\Standard\Stat;
 use Holdenovi\Profiler\Helper\Data as DataHelper;
 use Holdenovi\Profiler\Helper\Formatting as FormattingHelper;
 use Holdenovi\Profiler\Registry\CurrentRun;
 use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Block\Widget\Button\ButtonList;
 use Magento\Backend\Block\Widget\Button\ToolbarInterface;
+use Magento\Framework\App\ResourceConnection;
 
 class Tree extends \Holdenovi\Profiler\Block\Run
 {
@@ -27,6 +29,9 @@ class Tree extends \Holdenovi\Profiler\Block\Run
      * @var DataHelper
      */
     protected $dataHelper;
+
+    /** @var ResourceConnection */
+    protected $resourceConnection;
 
     /**
      * @var array metrics to be displayed
@@ -59,6 +64,7 @@ class Tree extends \Holdenovi\Profiler\Block\Run
      * @param ToolbarInterface $toolbar
      * @param FormattingHelper $formattingHelper
      * @param DataHelper $dataHelper
+     * @param ResourceConnection $resourceConnection
      * @param array $data
      */
     public function __construct(
@@ -68,10 +74,12 @@ class Tree extends \Holdenovi\Profiler\Block\Run
         ToolbarInterface $toolbar,
         FormattingHelper $formattingHelper,
         DataHelper $dataHelper,
+        ResourceConnection $resourceConnection,
         array $data = [])
     {
         $this->formattingHelper = $formattingHelper;
         $this->dataHelper = $dataHelper;
+        $this->resourceConnection = $resourceConnection;
         parent::__construct($context, $currentRunRegistry, $buttonList, $toolbar, $data);
     }
 
@@ -105,11 +113,16 @@ class Tree extends \Holdenovi\Profiler\Block\Run
 
                 $label = end($tmp['stack']);
 
+                // Native profiler does not allow using the name, but constructs a long string.
+                // Since we need to pull off the final value, do preg_match() here to avoid usage during profiling.
+                preg_match('([^->]+$)', $label, $matches);
+                $label = $matches[0];
+
                 if (isset($tmp['detail'])) {
                     $label .= ' (' . htmlspecialchars($tmp['detail']) . ')';
                 }
 
-                $type = \Holdenovi\Profiler\Driver\Standard\Stat::getType($tmp['type'], $label);
+                $type = Stat::getType($tmp['type'], $label);
 
                 $output .= '<span class="caption type-' . $type . '" title="' . htmlspecialchars($label) . '" />';
 
@@ -181,9 +194,12 @@ class Tree extends \Holdenovi\Profiler\Block\Run
 
         $output = '<div id="profiler">';
 
-//        if (Mage::getSingleton('core/resource')->getConnection('core_read')->getProfiler()->getEnabled()) {
-//            $output .= '<p>Number of database queries: ' . Mage::getSingleton('core/resource')->getConnection('core_read')->getProfiler()->getTotalNumQueries() . '</p>';
-//        }
+        /** @var \Magento\Framework\DB\Profiler $profiler */
+        $profiler = $this->resourceConnection->getConnection('read')->getProfiler();
+
+        if ($profiler->getEnabled()) {
+            $output .= '<p>Number of database queries: ' . $profiler->getTotalNumQueries() . '</p>';
+        }
 
         $output .= $this->renderHeader();
 
