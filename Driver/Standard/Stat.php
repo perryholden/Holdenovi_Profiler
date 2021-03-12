@@ -11,15 +11,13 @@ namespace Holdenovi\Profiler\Driver\Standard;
 
 class Stat
 {
-    protected const TYPE_DEFAULT = 'default';
-    protected const TYPE_DEFAULT_NOCHILDREN = 'default-nochildren';
-    protected const TYPE_DATABASE = 'db';
     protected const TYPE_TEMPLATE = 'template';
-    protected const TYPE_BLOCK = 'block';
-    protected const TYPE_OBSERVER = 'observer';
     protected const TYPE_EVENT = 'event';
-    protected const TYPE_MODEL = 'model';
-    protected const TYPE_EAVMODEL = 'eavmodel';
+    protected const TYPE_OBSERVER = 'observer';
+    protected const TYPE_BLOCK = 'block';
+    protected const TYPE_DATABASE = 'db';
+    protected const TYPE_CACHE = 'cache';
+    protected const TYPE_DEFAULT = 'default';
 
     // Set at the beginning and will be used in relative values "on-stop" as well as totals calculations.
     static public $startValues = [];
@@ -91,16 +89,16 @@ class Stat
         if (empty($type)) {
             if (substr($label, -1 * strlen('.phtml')) === '.phtml') {
                 $type = self::TYPE_TEMPLATE;
-            } elseif (strpos($label, 'DISPATCH EVENT:') === 0) {
+            } elseif (strpos($label, 'EVENT:') === 0) {
                 $type = self::TYPE_EVENT;
             } elseif (strpos($label, 'OBSERVER:') === 0) {
                 $type = self::TYPE_OBSERVER;
-            } elseif (strpos($label, 'BLOCK:') === 0) {
+            } elseif (strpos($label, 'BLOCK:') === 0) { // TODO: No longer used by Magento 2
                 $type = self::TYPE_BLOCK;
-            } elseif (strpos($label, 'CORE::create_object_of::') === 0) {
-                $type = self::TYPE_MODEL;
-            } elseif (strpos($label, '__EAV_LOAD_MODEL__') === 0) {
-                $type = self::TYPE_EAVMODEL;
+            } elseif (strpos($label, 'EAV:') === 0) {
+                $type = self::TYPE_DATABASE;
+            } elseif ((strpos($label, 'cache_load') === 0) || (strpos($label, 'cache_frontend_create') === 0)) {
+                $type = self::TYPE_CACHE;
             } else {
                 $type = self::TYPE_DEFAULT;
             }
