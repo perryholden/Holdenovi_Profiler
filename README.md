@@ -28,3 +28,9 @@ To enable the profiler:
 1. Copy the `holdenovi_profiler.xml.sample` file to `var/holdenovi_profiler.xml` and configure based on XML file comments.
 2. Disable the full-page and block caches: `bin/magento cache:disable full_page block_html`
 3. Run the following command: `bin/magento dev:profiler:enable '{"drivers":[{"type":"Holdenovi\\Profiler\\Driver\\Hierarchy"}]}'`
+
+## TODO:
+
+* Add back in `captureModelInfo` and `captureBacktraces` features.
+* Implement cron cleanup of old run records in the database.
+* Implement logging of invalid nesting.

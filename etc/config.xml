@@ -12,10 +12,6 @@
         <dev>
             <profiler>
                 <hide_lines_faster_than>10</hide_lines_faster_than>
-                <log_invalid_nesting>0</log_invalid_nesting>
-                <remote_call_url_template><![CDATA[http://localhost:8091/?message=%1$s:%2$s]]></remote_call_url_template>
-                <scheduler_cron_expr_profiler><![CDATA[45 3 * * *]]></scheduler_cron_expr_profiler>
-                <keep_days>1</keep_days>
             </profiler>
         </dev>
     </default>

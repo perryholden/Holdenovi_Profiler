@@ -16,25 +16,6 @@
                     <label>Hide lines faster than</label>
                     <comment><![CDATA[in ms<br />This is the default value for the slider in the run detail view that allows you to filter fast lines.]]></comment>
                 </field>
-                <field id="log_invalid_nesting" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Log invalid nesting</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="remote_call_url_template" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Remote call url template</label>
-                    <comment>
-                        <![CDATA[%1$s will be replaced by file<br />%2$s by line number<br />
-                        Enable capturing the backtraces required for this feature to work in var/holdenovi_profiler.xml: config > holdenovi_profiler > captureBacktraces]]>
-                    </comment>
-                    <!-- Add in depends -->
-                </field>
-                <field id="scheduler_cron_expr_profiler" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Old runs cleanup schedule</label>
-                </field>
-                <field id="keep_days" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Max age of saved run data</label>
-                    <comment><![CDATA[Please note that the aoe_profiler_run table might grow quickly (depending on the traffic and the sampling rate) and that every row could be big.]]></comment>
-                </field>
             </group>
         </section>
     </system>

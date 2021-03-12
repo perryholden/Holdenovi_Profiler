@@ -55,17 +55,5 @@ This file is expected to be in var/holdenovi_profiler.xml
             <requestUriBlackList><![CDATA[/^\/index\.php\/admin\//]]></requestUriBlackList><!-- this example blocks all admin urls -->
         </filters>
 
-        <!--
-        This might slow down page rendering, but will show you the classname
-        and the entity id instead of '__EAV_LOAD_MODEL__' only.
-        -->
-        <captureModelInfo>1</captureModelInfo>
-
-        <!--
-        This might slow down page rendering, but will allow you to click on the lines in the profile output
-        to make PHPStorm jump to the code (if using the "RemoteCall" plugin)
-        -->
-        <captureBacktraces>0</captureBacktraces>
-
     </holdenovi_profiler>
 </config>
