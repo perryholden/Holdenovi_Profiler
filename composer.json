@@ -2,7 +2,7 @@
     "name": "holdenovi/module-profiler",
     "description": "",
     "require": {
-        "php": "~7.0.0",
+        "php": "^7.0.0",
         "magento/magento-composer-installer": "*"
     },
     "type": "magento2-module",
