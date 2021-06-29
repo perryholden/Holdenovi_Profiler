@@ -2,8 +2,7 @@
     "name": "holdenovi/module-profiler",
     "description": "",
     "require": {
-        "php": "^7.0.0",
-        "magento/magento-composer-installer": "*"
+        "php": "^7.0"
     },
     "type": "magento2-module",
     "version": "0.2.1",
@@ -17,13 +16,5 @@
         "psr-4": {
             "Holdenovi\\Profiler\\": ""
         }
-    },
-    "extra": {
-        "map": [
-            [
-                "*",
-                "Holdenovi/Profiler"
-            ]
-        ]
     }
 }
