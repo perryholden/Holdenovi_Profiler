@@ -28,8 +28,11 @@ To enable the profiler:
 1. Copy the `holdenovi_profiler.xml.sample` file to `var/holdenovi_profiler.xml` and configure based on XML file comments.
 2. Disable the full-page and block caches: `bin/magento cache:disable full_page block_html`
 3. Run the following command: `bin/magento dev:profiler:enable '{"drivers":[{"type":"Holdenovi\\Profiler\\Driver\\Hierarchy"}]}'`
+    * NOTE: You will see a message stating `Type {"drivers":[{"type":"Holdenovi\Profiler\Driver\Hierarchy"}]} is not one of the built-in output types (html, csvfile).`. This is just a warning message, and it does not prevent the profiler from being enabled.
 
-## Enable database profiling
+To view the profile results grid, navigate in admin to `SYSTEM` → `Tools` → `Holdenovi Profiler`
+
+## Enable database profiling (optional)
 
 Add this to your `env.php` under `db` → `connection` → `default`:
 
