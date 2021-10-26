@@ -10,6 +10,7 @@ A Magento 2 profiler based on AOE_Profiler for Magento 1
 git clone -b master git@github.com:perryholden/Holdenovi_Profiler.git app/code/Holdenovi/Profiler
 bin/magento module:enable Holdenovi_Profiler
 bin/magento setup:upgrade
+bin/magento cache:flush
 ```
 
 ### Installation via Composer
@@ -19,6 +20,7 @@ composer config repositories.holdenovi_profiler vcs https://github.com/perryhold
 composer require holdenovi/module-profiler
 bin/magento module:enable Holdenovi_Profiler
 bin/magento setup:upgrade
+bin/magento cache:flush
 ```
 
 ## Configuration
