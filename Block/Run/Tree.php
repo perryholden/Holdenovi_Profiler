@@ -273,8 +273,8 @@ class Tree extends \Holdenovi\Profiler\Block\Run
         $offset = round(max(0, $offset));
         $offset = round(min(99, $offset));
 
-        $output = '<div class="progress">';
-        $output .= '<div class="progress-bar">';
+        $output = '<div class="profiler-progress">';
+        $output .= '<div class="profiler-progress-bar">';
         $output .= '<div class="progress-bar1" style="width: ' . $percent1 . '%; margin-left: ' . $offset . '%;"></div>';
 
         if ($percent2 > 0) {

@@ -183,7 +183,9 @@ class RunRepository implements RunRepositoryInterface
         
         $items = [];
         foreach ($collection as $model) {
-            $items[] = $model->getDataModel();
+            $dataModel = $model->getDataModel();
+            $dataModel->setStackData(''); // Blank out stack data, because it's not needed on the grid...
+            $items[] = $dataModel;
         }
         
         $searchResults->setItems($items);

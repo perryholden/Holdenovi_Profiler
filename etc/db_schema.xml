@@ -11,7 +11,7 @@
     <table name="holdenovi_profiler_run" resource="default" engine="innodb" comment="Holdenovi_Profiler Run Table">
         <column xsi:type="int" name="run_id" padding="11" unsigned="true" nullable="false" identity="true" comment="Run ID"/>
         <column xsi:type="timestamp" name="created_at" comment="Creation Time"/>
-        <column xsi:type="mediumblob" name="stack_data" comment="Data"/>
+        <column xsi:type="longblob" name="stack_data" comment="Data"/>
         <column xsi:type="varchar" name="route" length="255" comment="Route"/>
         <column xsi:type="varchar" name="url" length="255" comment="URL"/>
         <column xsi:type="varchar" name="session_id" length="255" comment="Session ID"/>
